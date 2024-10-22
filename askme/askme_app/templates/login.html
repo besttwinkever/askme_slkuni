@@ -2,17 +2,19 @@
 {% load static %}
 {% block title %} New Question {% endblock %}
 {% block content %}
-<form class="d-flex flex-column gap-3 shadow p-3 me-5">
-    <h3>Log In</h3>
-    <span class="text-danger" id="error">Wrong login or password, please try again!</span>
-    <div class="form-group">
-        <label class="col-form-label" for="login">Login:</label>
-        <input type="text" class="form-control border border-primary" id="login">
-    </div>
-    <div class="form-group">
-        <label class="col-form-label" for="password">Email:</label>
-        <input type="password" class="form-control border border-primary" id="password">
-    </div>
-    <button type="submit" class="form-btn btn btn-primary">Login</button>
-</form>
+<div class="d-flex justify-content-center">
+    <form class="d-flex flex-column gap-3 shadow p-3 me-5 w-50">
+        <h3>Log In</h3>
+        <span class="text-danger" id="error">Wrong login or password, please try again!</span>
+        <div class="form-group">
+            <label class="col-form-label" for="login">Login:</label>
+            <input type="text" class="form-control border border-primary" id="login">
+        </div>
+        <div class="form-group">
+            <label class="col-form-label" for="password">Email:</label>
+            <input type="password" class="form-control border border-primary" id="password">
+        </div>
+        <button type="submit" class="form-btn btn btn-primary">Login</button>
+    </form>
+</div>
 {% endblock %}

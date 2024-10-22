@@ -30,3 +30,8 @@
     text-align: center;
     justify-content: center;
 }
+
+.img-logo {
+    width: 4em;
+    height: 3em;
+}
