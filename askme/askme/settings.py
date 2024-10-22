@@ -41,10 +41,10 @@ INSTALLED_APPS = [
     'askme_app',
 ]
 
-STATIC_URL = 'askme_app/static/'
+STATIC_URL = '/askme_app/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "askme_app/static",
+    BASE_DIR / "static",
 ]
 
 MIDDLEWARE = [

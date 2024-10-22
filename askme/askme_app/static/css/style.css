@@ -1,0 +1,15 @@
+.img-avatar {
+    width: 3em;
+    height: 3em;
+    border-radius: 20%;
+}
+
+.question-content {
+    border: solid #40aac7 1px;
+    border-radius: 3%;
+    width: 45em;
+}
+
+.question-title {
+    height: 2.2em;
+}
