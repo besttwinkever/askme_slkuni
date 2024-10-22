@@ -13,3 +13,20 @@
 .question-title {
     height: 2.2em;
 }
+
+.form-btn {
+    width: 15em;
+}
+
+.edit-avatar-img {
+    width: 10em;
+    height: 10em;
+}
+
+.footer {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    justify-content: center;
+}

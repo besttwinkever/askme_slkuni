@@ -1,0 +1,34 @@
+{% extends 'base_for_unauthorized.html' %}
+{% load static %}
+{% block title %} New Question {% endblock %}
+{% block content %}
+<form class="d-flex flex-column gap-2 shadow p-3 mx-5">
+    <h3>Registration</h3>
+    <span class="text-danger" id="error">Sorry, this email address already registered!</span>
+    <div class="form-group">
+        <label class="col-form-label" for="login">Login:</label>
+        <input type="text" class="form-control border border-primary" id="login">
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="email">Email:</label>
+        <input type="email" class="form-control border border-primary" id="email">
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="displayName">Display Name:</label>
+        <input type="text" class="form-control border border-primary" id="displayName">
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="password">Password:</label>
+        <input type="text" class="form-control border border-primary" id="password">
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="repeatPassword">Repeat password:</label>
+        <input type="text" class="form-control border border-primary" id="repeatPassword">
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="repeatPassword">Upload avatar</label>
+        <input type="file" class="form-control" id="repeatPassword">
+    </div>
+    <button type="submit" class="form-btn btn btn-success mt-3">Register</button>
+</form>
+{% endblock %}

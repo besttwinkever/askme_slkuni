@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} New Question {% endblock %}
+{% block content %}
+<form class="d-flex flex-column gap-3 shadow p-3 me-5">
+    <h3>New Question</h3>
+    <div class="form-group">
+        <label class="col-form-label" for="questionTitle">Title:</label>
+        <input type="text" class="form-control border border-primary" id="questionTitle">
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="questionText">Text:</label>
+        <textarea rows="7" class="form-control border border-primary" id="questionText"></textarea>
+    </div>
+    <div class="form-group">
+        <label class="col-form-label" for="questionTags">Tags:</label>
+        <input type="text" class="form-control border border-primary" id="questionTags">
+    </div>
+    <button type="submit" class="form-btn btn btn-success">Create</button>
+</form>
+{% endblock %}
