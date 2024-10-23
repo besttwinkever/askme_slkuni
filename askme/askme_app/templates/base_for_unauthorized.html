@@ -6,64 +6,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>AskVideo | {% block title %}{% endblock %}</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'img/logo.png' %}" alt="Logo" class="img-logo">
-                AskVideo
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-primary" type="submit">Ask</button>
-            </form>
-            <div class="d-flex gap-3">
-                <a href="#">Login</a>
-                <a href="#">Register</a>
-            </div>
-        </div>
-    </nav>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-10">
-                {% block content %}{% endblock %}
-            </div>
-            <div class="col">
-                <h3>Popular Tags</h3>
-                <div class="d-flex flex-wrap gap-2 mt-3">
-                    <a href="#">cats</a>
-                    <a href="#">dogs</a>
-                    <a href="#">funny</a>
-                    <a href="#">trailer</a>
-                    <a href="#">movie</a>
-                    <a href="#">cartoon</a>
-                    <a href="#">youtube</a>
-                    <a href="#">games</a>
-                    <a href="#">tutorial</a>
-                    <a href="#">challenge</a>
-                    <a href="#">editing</a>
-                    <a href="#">photoshop</a>
-                    <a href="#">vegas</a>
-                    <a href="#">idea</a>
+    <div class="d-flex flex-column h-100">
+        <nav class="d-flex navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid px-5">
+                <a class="navbar-brand" href="{% url 'index' %}">
+                    <img src="{% static 'img/logo.png' %}" alt="Logo" class="img-logo">
+                    AskVideo
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Question" aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Ask</button>
+                </form>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'register' %}">Register</a>
                 </div>
-                <h3 class="mt-4">Best Members</h3>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">MrBeast</li>
-                    <li class="list-group-item">Mark Rober</li>
-                    <li class="list-group-item">PewDiePie</li>
-                    <li class="list-group-item">T2X2</li>
-                    <li class="list-group-item">Stintik</li>
-                </ul>
+            </div>
+        </nav>
+        <div class="container-fluid mt-5 px-5 flex-grow-1">
+            <div class="row">
+                <div class="col-10">
+                    {% block content %}{% endblock %}
+                </div>
+                <div class="col">
+                    <h3>Popular Tags</h3>
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <a href="#">cats</a>
+                        <a href="#">dogs</a>
+                        <a href="#">funny</a>
+                        <a href="#">trailer</a>
+                        <a href="#">movie</a>
+                        <a href="#">cartoon</a>
+                        <a href="#">youtube</a>
+                        <a href="#">games</a>
+                        <a href="#">tutorial</a>
+                        <a href="#">challenge</a>
+                        <a href="#">editing</a>
+                        <a href="#">photoshop</a>
+                        <a href="#">vegas</a>
+                        <a href="#">idea</a>
+                    </div>
+                    <h3 class="mt-4">Best Members</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">MrBeast</li>
+                        <li class="list-group-item">Mark Rober</li>
+                        <li class="list-group-item">PewDiePie</li>
+                        <li class="list-group-item">T2X2</li>
+                        <li class="list-group-item">Stintik</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="footer">
-        <span>Copyright © 2024 askvideo.com</span>
+        <div class="footer align-items-end justify-content-end text-center">
+            <span>Copyright © 2024 askvideo.com</span>
+        </div>
     </div>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>

@@ -19,13 +19,13 @@ from django.urls import path
 from askme_app import views
 
 urlpatterns = [
-    path('', views.indexController),
-    path('ask/', views.askController),
-    path('tag/', views.tagController),
-    path('settings/', views.settingsController),
-    path('login/', views.loginController),
-    path('register/', views.registerController),
-    path('question/', views.questionController),
+    path('', views.indexController, name='index'),
+    path('ask/', views.askController, name='ask'),
+    path('tag/', views.tagController, name='tag'),
+    path('settings/', views.settingsController, name='settings'),
+    path('login/', views.loginController, name='login'),
+    path('register/', views.registerController, name='register'),
+    path('question/', views.questionController, name='question'),
 
     path('admin/', admin.site.urls),
 ]

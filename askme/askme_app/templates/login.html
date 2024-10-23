@@ -2,8 +2,8 @@
 {% load static %}
 {% block title %} New Question {% endblock %}
 {% block content %}
-<div class="d-flex justify-content-center">
-    <form class="d-flex flex-column gap-3 shadow p-3 me-5 w-50">
+<div class="d-flex justify-content-center mt-2 w-100">
+    <form class="d-flex flex-column gap-3 shadow border p-3 me-5 w-50 align-items-center">
         <h3>Log In</h3>
         <span class="text-danger" id="error">Wrong login or password, please try again!</span>
         <div class="form-group">
@@ -11,10 +11,11 @@
             <input type="text" class="form-control border border-primary" id="login">
         </div>
         <div class="form-group">
-            <label class="col-form-label" for="password">Email:</label>
+            <label class="col-form-label" for="password">Password:</label>
             <input type="password" class="form-control border border-primary" id="password">
         </div>
         <button type="submit" class="form-btn btn btn-primary">Login</button>
+        <a href="{% url 'register' %}">No account? Create!</a>
     </form>
 </div>
 {% endblock %}

@@ -1,3 +1,8 @@
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
 .img-avatar {
     width: 3em;
     height: 3em;
@@ -23,15 +28,23 @@
     height: 10em;
 }
 
-.footer {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    text-align: center;
-    justify-content: center;
-}
-
 .img-logo {
     width: 4em;
     height: 3em;
+}
+
+.rating {
+    width: 100%;
+    text-align: center;
+    font-size: 1.3em;
+}
+
+.vote {
+    transition: all 0.2s;
+    opacity: 1;
+}
+
+.vote:hover {
+    cursor: pointer;
+    opacity: 0.8;
 }
