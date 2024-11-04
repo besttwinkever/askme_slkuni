@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Main {% endblock %}
+{% block content %}
+<div class="d-flex gap-{% if meta.tag == None %}4{% else %}2{% endif %}">
+    {% if meta.tag != None %}
+        <h3>Tag:</h3>
+        <h3>{{meta.tag}}</h3>
+    {% else %}
+        <h3>{% if meta.is_hot %}Hot{% else %}New{% endif %} Questions</h3>
+        {% if meta.is_hot %}
+            <a href="{% url 'index' %}" class="mt-2">New Questions</a>
+        {% else %}
+            <a href="{% url 'hot' %}" class="mt-2">Hot Questions</a>
+        {% endif %}
+    {% endif %}
+</div>
+<div class="mt-2 d-flex flex-column gap-3">
+    {% for question in page.object_list %}
+    <!-- Question card component -->
+    <div class="d-flex question-content p-2 gap-3">
+        <div class="d-flex flex-column">
+            <img class="img-avatar ms-1" src="{% static question.user.img  %}">
+            <div class="d-flex gap-2 mt-2">
+                <i class="bi-arrow-up vote mt-1"></i>
+                <span class="rating {% if question.likes >= 0 %}text-success{% else %}text-danger{% endif %}">{{question.likes}}</span>
+                <i class="bi-arrow-down vote mt-1"></i>
+            </div>
+        </div>
+        <div class="d-flex flex-column">
+            <a class="link-dark" href="{% url 'question' questionId=question.id %}">
+                <h4 class="question-title">{{question.title}}</h4>
+            </a>
+            <span>{{question.text}}</span>
+            <div class="d-flex mt-2 gap-3">
+                <a href="#">answer ({{question.answers|length}})</a>
+                <div class="d-flex gap-2">
+                    <span>Tags:</span>
+                    {% for tag in question.tags %}
+                    <a href="{% url 'tag' tag=tag %}">{{tag}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Question card component end -->
+    {% endfor %}
+    
+    <nav class="mt-2">
+        <ul class="pagination">
+            <li class="page-item {%if not page.has_previous%}disabled{% endif %}"><a class="page-link" href="{{meta.baseUrl}}?page={% if page.has_previous %}{{page.previous_page_number}}{% endif %}">Previous</a></li>
+            {% if page.has_previous %}
+                {% if page.previous_page_number != 1 %}
+                    <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page=1">1</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.previous_page_number}}">{{page.previous_page_number}}</a></li>
+            {% endif %}
+            <li class="page-item active"><a class="page-link" href="{{meta.baseUrl}}?page={{page.number}}">{{page.number}}</a></li>
+            {% if page.has_next %}
+                <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.next_page_number}}">{{page.next_page_number}}</a></li>
+                {% if page.next_page_number != page.paginator.num_pages %}
+                    <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a></li>
+                {% endif %}
+            {% endif %}
+            <li class="page-item {%if not page.has_next%}disabled{% endif %}"><a class="page-link" href="{{meta.baseUrl}}?page={% if page.has_next %}{{page.next_page_number}}{% endif %}">Next</a></li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}

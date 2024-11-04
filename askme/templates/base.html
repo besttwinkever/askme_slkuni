@@ -25,14 +25,19 @@
                     <button class="btn btn-outline-primary" type="submit">Ask</button>
                 </form>
                 <div class="d-flex gap-3">
-                    <img src="{% static 'img/default-avatar.png' %}" alt="Avatar" class="img-avatar">
-                    <div>
-                        <div class="text-center">
-                            YourOnlyViewer
+                    {% if user != None %}
+                        <img src="{% static user.image %}" alt="Avatar" class="img-avatar">
+                        <div>
+                            <div class="text-center">
+                                {{user.displayName}}
+                            </div>
+                            <a href="{% url 'settings' %}">Settings</a>
+                            <a href="{% url 'login' %}">Logout</a>
                         </div>
-                        <a href="{% url 'settings' %}">Settings</a>
-                        <a href="#">Logout</a>
-                    </div>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a>
+                        <a href="{% url 'register' %}">Register</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>
@@ -44,28 +49,15 @@
                 <div class="col">
                     <h3>Popular Tags</h3>
                     <div class="d-flex flex-wrap gap-2 mt-3">
-                        <a href="#">cats</a>
-                        <a href="#">dogs</a>
-                        <a href="#">funny</a>
-                        <a href="#">trailer</a>
-                        <a href="#">movie</a>
-                        <a href="#">cartoon</a>
-                        <a href="#">youtube</a>
-                        <a href="#">games</a>
-                        <a href="#">tutorial</a>
-                        <a href="#">challenge</a>
-                        <a href="#">editing</a>
-                        <a href="#">photoshop</a>
-                        <a href="#">vegas</a>
-                        <a href="#">idea</a>
+                        {% for tag in tags %}
+                        <a href="{% url 'tag' tag=tag %}">{{tag}}</a>
+                        {% endfor %}
                     </div>
                     <h3 class="mt-4">Best Members</h3>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">MrBeast</li>
-                        <li class="list-group-item">Mark Rober</li>
-                        <li class="list-group-item">PewDiePie</li>
-                        <li class="list-group-item">T2X2</li>
-                        <li class="list-group-item">Stintik</li>
+                        {% for user in popularUsers %}
+                        <li class="list-group-item">{{user}}</li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>

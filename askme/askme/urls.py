@@ -20,12 +20,13 @@ from askme_app import views
 
 urlpatterns = [
     path('', views.indexController, name='index'),
+    path('hot/', views.hotController, name='hot'),
     path('ask/', views.askController, name='ask'),
-    path('tag/', views.tagController, name='tag'),
+    path('tag/<str:tag>', views.tagController, name='tag'),
+    path('question/<int:questionId>', views.questionController, name='question'),
     path('settings/', views.settingsController, name='settings'),
     path('login/', views.loginController, name='login'),
-    path('register/', views.registerController, name='register'),
-    path('question/', views.questionController, name='question'),
+    path('signup/', views.registerController, name='register'),
 
     path('admin/', admin.site.urls),
 ]

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Main {% endblock %}
+{% block content %}
+<div class="d-flex flex-column gap-5 w-75">
+    <div class="d-flex gap-4 p-2">
+        <div class="d-flex flex-column">
+            <img class="img-avatar ms-1" src="{% static question.user.img %}" alt="Avatar">
+            <div class="d-flex gap-2 mt-3">
+                <i class="bi-arrow-up vote mt-1"></i>
+                <span class="rating text-success">{{question.likes}}</span>
+                <i class="bi-arrow-down vote mt-1"></i>
+            </div>
+        </div>
+        <div class="d-flex flex-column">
+            <h3 class="question-title">{{question.title}}</h3>
+            <span>{{question.text}}</span>
+            <div class="d-flex mt-2 gap-3">
+                <div class="d-flex gap-2">
+                    <span>Tags:</span>
+                    {% for tag in question.tags %}
+                    <a href="{% url 'tag' tag=tag %}">{{tag}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr>
+            <span class="text-secondary">{{question.user.name}}, {{question.date}}</span>
+            <a href="#">reply</a>
+        </div>
+    </div>
+    
+    {% for answer in question.answers %}
+
+        {% if answer.is_right_answer %}
+        <div class="d-flex flex-column gap-1">
+            <h3 class="text-success">Right answer</h3>
+        {% endif %}
+
+        <div class="d-flex gap-3 p-2 {% if answer.is_right_answer %}border border-success border-2 rounded{% endif %}">
+            <div class="d-flex flex-column">
+                <img class="img-avatar ms-1" src="{% static answer.user.img %}" alt="Avatar">
+                <div class="d-flex gap-2 mt-3">
+                    <i class="bi-arrow-up vote mt-1"></i>
+                    <span class="rating text-success">{{answer.likes}}</span>
+                    <i class="bi-arrow-down vote mt-1"></i>
+                </div>
+            </div>
+            <div class="d-flex flex-column mt-2">
+                <span>{{answer.text}}</span>
+                <hr>
+                <span class="text-secondary">{{answer.user.name}}, {{answer.date}}</span>
+                <div class="d-flex gap-3 mt-1">
+                    <a href="#">reply</a>
+                    <div class="d-flex gap-1">
+                        <input class="" type="checkbox" {% if answer.is_right_answer %}checked{% endif %}>Mark as right answer
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if answer.is_right_answer %}
+         </div>
+        {% endif %}
+
+    {% endfor %}
+
+    <hr>
+    <div class="d-flex flex-column gap-3">
+        <textarea class="form-control" placeholder="Your answer" rows="5"></textarea>
+        <button class="btn btn-primary w-25">Send</button>
+    </div>
+        
+</div>
+{% endblock %}
