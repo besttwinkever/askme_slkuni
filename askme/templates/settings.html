@@ -10,19 +10,19 @@
         </div>
         <div class="form-group">
             <label class="col-form-label" for="login">Login:</label>
-            <input type="text" class="form-control border border-primary" id="login" value="{{user.login}}">
+            <input type="text" class="form-control border border-primary" id="login" value="{{profile.user.username}}">
         </div>
         <div class="form-group">
             <label class="col-form-label" for="email">Email:</label>
-            <input type="email" class="form-control border border-primary" id="email" value="{{user.email}}">
+            <input type="email" class="form-control border border-primary" id="email" value="{{profile.user.email}}">
         </div>
         <div class="form-group">
             <label class="col-form-label" for="displayName">Display name:</label>
-            <input class="form-control border border-primary" id="displayName" value="{{user.displayName}}">
+            <input class="form-control border border-primary" id="displayName" value="{{profile.user.first_name}}">
         </div>
         <div class="form-group">
             <label class="col-form-label" for="uploadAvatar">Upload avatar</label>
-            <img src="{% static user.image %}" class="edit-avatar-img form-control border border-primary" id="uploadAvatar" alt="Uploaded avatar"></img>
+            <img src="{% static 'img/' %}{{ profile.avatar }}" class="edit-avatar-img form-control border border-primary" id="uploadAvatar" alt="Uploaded avatar"></img>
         </div>
         <div class="form-group">
             <input type="file" class="form-control" id="newUploadedAvatar">

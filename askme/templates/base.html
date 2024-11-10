@@ -25,11 +25,11 @@
                     <button class="btn btn-outline-primary" type="submit">Ask</button>
                 </form>
                 <div class="d-flex gap-3">
-                    {% if user != None %}
-                        <img src="{% static user.image %}" alt="Avatar" class="img-avatar">
+                    {% if profile != None %}
+                        <img src="{% static 'img/' %}{{ profile.avatar }}" alt="Avatar" class="img-avatar">
                         <div>
                             <div class="text-center">
-                                {{user.displayName}}
+                                {{profile.user.first_name}}
                             </div>
                             <a href="{% url 'settings' %}">Settings</a>
                             <a href="{% url 'login' %}">Logout</a>
@@ -50,13 +50,13 @@
                     <h3>Popular Tags</h3>
                     <div class="d-flex flex-wrap gap-2 mt-3">
                         {% for tag in tags %}
-                        <a href="{% url 'tag' tag=tag %}">{{tag}}</a>
+                        <a href="{% url 'tag' tag=tag.name %}">{{tag.name}}</a>
                         {% endfor %}
                     </div>
                     <h3 class="mt-4">Best Members</h3>
                     <ul class="list-group list-group-flush">
-                        {% for user in popularUsers %}
-                        <li class="list-group-item">{{user}}</li>
+                        {% for profile in popularProfiles %}
+                        <li class="list-group-item">{{profile.user.first_name}}</li>
                         {% endfor %}
                     </ul>
                 </div>

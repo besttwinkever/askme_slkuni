@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .questions import getHotQuestions, getQuestionsContainingTag, getTagListFromQuestions, getAllQuestions, getMostPopularUsers, findQuestionById
+from askme_app.models import Question, Tag, Profile
 
 def paginate(questions, request, per_page=5):
     page = 1
@@ -17,100 +17,46 @@ def paginate(questions, request, per_page=5):
         pageObj = paginator.page(1)
     return pageObj
 
-def indexController(request):
-    return render(request, 'index.html', {
+def getDataForView(request=None, is_hot=False, tag=None, baseUrl=None, isAuthenticated=True, question=None):
+    data = {
         'meta': {
-            'is_hot': False,
-            'tag': None,
-            'baseUrl': reverse('index'),
+            'is_hot': is_hot,
+            'tag': tag,
+            'baseUrl': baseUrl
         },
-        'page': paginate(getAllQuestions(), request),
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': {
-            'displayName': 'YourOnlyViewer',
-            'image': '/img/default-avatar.png'
-        }
-    })
+        'tags': Tag.objects.popular(),
+        'profile': isAuthenticated and Profile.objects.first() or None,
+        'popularProfiles': Profile.objects.popular()
+    }
+    if baseUrl != None and request != None:
+        data['page'] = paginate(Question.objects.with_tag(tag) if tag != None else Question.objects.hot() if is_hot else Question.objects.new(), request)
+    if question != None:
+        data['question'] = question
+    return data
+
+def indexController(request):
+    return render(request, 'index.html', getDataForView(request=request, baseUrl=reverse('index')))
 
 def hotController(request):
-    return render(request, 'index.html', {
-        'meta': {
-            'is_hot': True,
-            'tag': None,
-            'baseUrl': reverse('hot')
-        },
-        'page': paginate(getHotQuestions(), request),
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': {
-            'displayName': 'YourOnlyViewer',
-            'image': '/img/default-avatar.png'
-        }
-    })
+    return render(request, 'index.html', getDataForView(request=request, is_hot=True, baseUrl=reverse('hot')))
 
 def tagController(request, tag):
-    return render(request, 'index.html', {
-        'meta': {
-            'is_hot': False,
-            'tag': tag,
-            'baseUrl': reverse('tag', kwargs={'tag': tag})
-        },
-        'page': paginate(getQuestionsContainingTag(tag), request),
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': {
-            'displayName': 'YourOnlyViewer',
-            'image': '/img/default-avatar.png'
-        }
-    })
+    return render(request, 'index.html', getDataForView(request=request, tag=tag, baseUrl=reverse('tag', kwargs={'tag': tag})))
 
 def askController(request):
-    return render(request, 'ask.html', {
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': {
-            'displayName': 'YourOnlyViewer',
-            'image': '/img/default-avatar.png'
-        }
-    })
+    return render(request, 'ask.html', getDataForView())
 
 def settingsController(request):
-    return render(request, 'settings.html', {
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': {
-            'login': 'superuser',
-            'email': 'superuser@mail.ru',
-            'displayName': 'YourOnlyViewer',
-            'image': '/img/default-avatar.png'
-        }
-    })
+    return render(request, 'settings.html', getDataForView())
 
 def loginController(request):
-    return render(request, 'login.html', {
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': None
-    })
+    return render(request, 'login.html', getDataForView(isAuthenticated=False))
 
 def registerController(request):
-    return render(request, 'register.html', {
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': None
-    })
+    return render(request, 'register.html', getDataForView(isAuthenticated=False))
 
 def questionController(request, questionId):
-    question = findQuestionById(questionId)
+    question = Question.objects.filter(pk=questionId).first()
     if question == None:
         return redirect('index')
-    return render(request, 'question.html', {
-        'question': question,
-        'tags': getTagListFromQuestions(),
-        'popularUsers': getMostPopularUsers(),
-        'user': {
-            'displayName': 'YourOnlyViewer',
-            'image': '/img/default-avatar.png'
-        }
-    })
+    return render(request, 'question.html', getDataForView(question=question))

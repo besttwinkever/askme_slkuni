@@ -1,3 +1,9 @@
+#
+# 
+# Deprecated code for task 2. 
+#
+#
+
 import operator
 
 gQuestions = [
@@ -553,8 +559,6 @@ gQuestions = [
             }
         ]
     }
-
-
 ]
 
 
