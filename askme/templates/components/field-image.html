@@ -1,0 +1,5 @@
+{% load static %}
+<div class="form-group">
+    <label class="col-form-label" for="{{id}}">{{displayName}}</label>
+    <img src="{% static 'img/' %}{{ value }}" class="edit-avatar-img form-control border border-primary" id="{{id}}" alt="{{displayName}}"></img>
+</div>

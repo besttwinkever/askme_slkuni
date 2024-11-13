@@ -17,53 +17,9 @@
 </div>
 <div class="mt-2 d-flex flex-column gap-3">
     {% for question in page.object_list %}
-    <!-- Question card component -->
-    <div class="d-flex question-content p-2 gap-3">
-        <div class="d-flex flex-column">
-            <img class="img-avatar ms-1" src="{% static 'img/' %}{{ question.author.avatar }}" alt="Avatar">
-            <div class="d-flex gap-0 mt-2">
-                <i class="bi-arrow-up vote mt-1"></i>
-                <span class="rating {% if question.likes_count >= 0 %}text-success{% else %}text-danger{% endif %}">{{question.likes_count}}</span>
-                <!-- <i class="bi-arrow-down vote mt-1"></i> -->
-            </div>
-        </div>
-        <div class="d-flex flex-column">
-            <a class="link-dark" href="{% url 'question' questionId=question.id %}">
-                <h4 class="question-title">{{question.title}}</h4>
-            </a>
-            <span>{{question.text}}</span>
-            <div class="d-flex mt-2 gap-3">
-                <a href="{% url 'question' questionId=question.id %}">answer ({{question.answers_count}})</a>
-                <div class="d-flex gap-2">
-                    <span>Tags:</span>
-                    {% for tag in question.tags.all %}
-                    <a href="{% url 'tag' tag=tag.name %}">{{tag.name}}</a>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Question card component end -->
+        {% include 'components/card-questions.html' %}
     {% endfor %}
     
-    <nav class="mt-2">
-        <ul class="pagination">
-            <li class="page-item {%if not page.has_previous%}disabled{% endif %}"><a class="page-link" href="{{meta.baseUrl}}?page={% if page.has_previous %}{{page.previous_page_number}}{% endif %}">Previous</a></li>
-            {% if page.has_previous %}
-                {% if page.previous_page_number != 1 %}
-                    <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page=1">1</a></li>
-                {% endif %}
-                <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.previous_page_number}}">{{page.previous_page_number}}</a></li>
-            {% endif %}
-            <li class="page-item active"><a class="page-link" href="{{meta.baseUrl}}?page={{page.number}}">{{page.number}}</a></li>
-            {% if page.has_next %}
-                <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.next_page_number}}">{{page.next_page_number}}</a></li>
-                {% if page.next_page_number != page.paginator.num_pages %}
-                    <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a></li>
-                {% endif %}
-            {% endif %}
-            <li class="page-item {%if not page.has_next%}disabled{% endif %}"><a class="page-link" href="{{meta.baseUrl}}?page={% if page.has_next %}{{page.next_page_number}}{% endif %}">Next</a></li>
-        </ul>
-    </nav>
+    {% include 'components/paginator.html' %}
 </div>
 {% endblock %}

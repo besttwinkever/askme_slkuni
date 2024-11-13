@@ -1,0 +1,6 @@
+<h3 class="mt-4">Best Members</h3>
+<ul class="list-group list-group-flush">
+    {% for profile in popularProfiles %}
+    <li class="list-group-item">{{profile.user.first_name}}</li>
+    {% endfor %}
+</ul>

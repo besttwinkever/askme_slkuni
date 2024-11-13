@@ -11,60 +11,19 @@
 </head>
 <body>
     <div class="d-flex flex-column h-100">
-        <nav class="d-flex navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid px-5">
-                <a class="navbar-brand" href="{% url 'index' %}">
-                    <img src="{% static 'img/logo.png' %}" alt="Logo" class="img-logo">
-                    AskVideo
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Question" aria-label="Search">
-                    <button class="btn btn-outline-primary" type="submit">Ask</button>
-                </form>
-                <div class="d-flex gap-3">
-                    {% if profile != None %}
-                        <img src="{% static 'img/' %}{{ profile.avatar }}" alt="Avatar" class="img-avatar">
-                        <div>
-                            <div class="text-center">
-                                {{profile.user.first_name}}
-                            </div>
-                            <a href="{% url 'settings' %}">Settings</a>
-                            <a href="{% url 'login' %}">Logout</a>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'login' %}">Login</a>
-                        <a href="{% url 'register' %}">Register</a>
-                    {% endif %}
-                </div>
-            </div>
-        </nav>
+        {% include 'components/navbar.html' %}
         <div class="container-fluid mt-5 px-5 flex-grow-1">
             <div class="row">
                 <div class="col-10">
                     {% block content %}{% endblock %}
                 </div>
                 <div class="col">
-                    <h3>Popular Tags</h3>
-                    <div class="d-flex flex-wrap gap-2 mt-3">
-                        {% for tag in tags %}
-                        <a href="{% url 'tag' tag=tag.name %}">{{tag.name}}</a>
-                        {% endfor %}
-                    </div>
-                    <h3 class="mt-4">Best Members</h3>
-                    <ul class="list-group list-group-flush">
-                        {% for profile in popularProfiles %}
-                        <li class="list-group-item">{{profile.user.first_name}}</li>
-                        {% endfor %}
-                    </ul>
+                    {% include 'components/popular-tags.html' %}
+                    {% include 'components/best-members.html' %}
                 </div>
             </div>
         </div>
-        <div class="footer align-items-end justify-content-end text-center">
-            <span>Copyright © 2024 askvideo.com</span>
-        </div>
+        {% include 'components/footer.html' %}
     </div>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>

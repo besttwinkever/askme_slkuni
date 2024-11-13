@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="d-flex gap-4 p-2">
+    <div class="d-flex flex-column">
+        <img class="img-avatar ms-1" src="{% static 'img/' %}{{ question.author.avatar }}" alt="Avatar">
+        <div class="d-flex gap-0 mt-3">
+            <i class="bi-arrow-up vote mt-1"></i>
+            <span class="rating text-success">{{question.likes_count}}</span>
+            <!-- <i class="bi-arrow-down vote mt-1"></i> -->
+        </div>
+    </div>
+    <div class="d-flex flex-column">
+        <h3 class="question-title">{{question.title}}</h3>
+        <span>{{question.text}}</span>
+        <div class="d-flex mt-2 gap-3">
+            <div class="d-flex gap-2">
+                <span>Tags:</span>
+                {% for tag in question.tags.all %}
+                <a href="{% url 'tag' tag=tag.name %}">{{tag.name}}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <hr>
+        <span class="text-secondary">{{question.author.user.first_name}}, {{question.created_at}}</span>
+        <a href="#">reply</a>
+    </div>
+</div>

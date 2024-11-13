@@ -1,0 +1,6 @@
+<h3>Popular Tags</h3>
+<div class="d-flex flex-wrap gap-2 mt-3">
+    {% for tag in tags %}
+    <a href="{% url 'tag' tag=tag.name %}">{{tag.name}}</a>
+    {% endfor %}
+</div>

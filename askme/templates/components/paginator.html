@@ -1,0 +1,19 @@
+<nav class="mt-2">
+    <ul class="pagination">
+        <li class="page-item {%if not page.has_previous%}disabled{% endif %}"><a class="page-link" href="{{meta.baseUrl}}?page={% if page.has_previous %}{{page.previous_page_number}}{% endif %}">Previous</a></li>
+        {% if page.has_previous %}
+            {% if page.previous_page_number != 1 %}
+                <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page=1">1</a></li>
+            {% endif %}
+            <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.previous_page_number}}">{{page.previous_page_number}}</a></li>
+        {% endif %}
+        <li class="page-item active"><a class="page-link" href="{{meta.baseUrl}}?page={{page.number}}">{{page.number}}</a></li>
+        {% if page.has_next %}
+            <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.next_page_number}}">{{page.next_page_number}}</a></li>
+            {% if page.next_page_number != page.paginator.num_pages %}
+                <li class="page-item"><a class="page-link" href="{{meta.baseUrl}}?page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a></li>
+            {% endif %}
+        {% endif %}
+        <li class="page-item {%if not page.has_next%}disabled{% endif %}"><a class="page-link" href="{{meta.baseUrl}}?page={% if page.has_next %}{{page.next_page_number}}{% endif %}">Next</a></li>
+    </ul>
+</nav>

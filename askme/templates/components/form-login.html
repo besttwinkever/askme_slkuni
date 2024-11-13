@@ -1,0 +1,8 @@
+<form class="d-flex flex-column gap-3 shadow border p-3 me-5 w-50 align-items-center">
+    <h3>Log In</h3>
+    <span class="text-danger" id="error">Wrong login or password, please try again!</span>
+    {% include 'components/field-input.html' with displayName='Login:' id='login' %}
+    {% include 'components/field-password.html' with displayName='Password:' id='password' %}
+    <button type="submit" class="form-btn btn btn-primary">Login</button>
+    <a href="{% url 'register' %}">No account? Create!</a>
+</form>

@@ -1,0 +1,32 @@
+{% load static %}
+
+{% if answer.is_right %}
+    <div class="d-flex flex-column gap-1">
+        <h3 class="text-success">Right answer</h3>
+{% endif %}
+
+<div class="d-flex gap-3 p-2 {% if answer.is_right %}border border-success border-2 rounded{% endif %}">
+    <div class="d-flex flex-column">
+        <img class="img-avatar ms-1" src="{% static 'img/' %}{{ answer.author.avatar }}" alt="Avatar">
+        <div class="d-flex gap-0 mt-3">
+            <i class="bi-arrow-up vote mt-1"></i>
+            <span class="rating text-success">{{answer.likes_count}}</span>
+            <!-- <i class="bi-arrow-down vote mt-1"></i> -->
+        </div>
+    </div>
+    <div class="d-flex flex-column mt-2">
+        <span>{{answer.text}}</span>
+        <hr>
+        <span class="text-secondary">{{answer.author.user.first_name}}, {{answer.created_at}}</span>
+        <div class="d-flex gap-3 mt-1">
+            <a href="#">reply</a>
+            <div class="d-flex gap-1">
+                <input class="" type="checkbox" {% if answer.is_right %}checked{% endif %}>Mark as right answer
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if answer.is_right %}
+    </div>
+{% endif %}
