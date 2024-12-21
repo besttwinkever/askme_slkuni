@@ -1,10 +1,10 @@
 {% load static %}
 
-<div class="d-flex gap-4 p-2">
+<div class="d-flex gap-4 p-2" id="question-{{question.id}}">
     <div class="d-flex flex-column">
         <img class="img-avatar ms-1" src="{{ question.author.avatar.url }}" alt="Avatar">
         <div class="d-flex gap-0 mt-3">
-            <i class="bi-arrow-up vote mt-1"></i>
+            <i class="bi-arrow-up vote {% if profile != null and profile in question.liked_by_profiles %}vote-active{% endif %} mt-1" onclick="like({{question.id}})"></i>
             <span class="rating text-success">{{question.likes_count}}</span>
             <!-- <i class="bi-arrow-down vote mt-1"></i> -->
         </div>

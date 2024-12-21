@@ -1,8 +1,8 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from askme_app.models import Question, Tag, Profile
+from askme_app.models import Question, Tag, Profile, Answer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from askme_app.forms import *
@@ -136,3 +136,68 @@ def questionController(request, questionId):
             answer = question.addAnswer(request.user, form.cleaned_data['text'])
             return HttpResponseRedirect(f'{reverse("question", kwargs={"questionId": questionId})}#answer-{answer.id}')
     return render(request, 'question.html', getDataForView(request, question=question, form=form))
+
+@login_required()
+def likeApiController(request):
+    if request.method == 'POST':
+        questionId = request.POST.get('questionId', None)
+        answerId = request.POST.get('answerId', None)
+        if questionId == None:
+            return JsonResponse({
+                'error': True,
+                'message': 'Question id is required'
+            })
+        question = Question.objects.filter(pk=questionId).first()
+        if not question:
+            return JsonResponse({
+                'error': True,
+                'message': 'Question not found'
+            })
+        likes = 0
+        if answerId:
+            answer = Answer.objects.filter(pk=answerId, question=question).first()
+            if not answer:
+                return JsonResponse({
+                    'error': True,
+                    'message': 'Answer not found'
+                })
+            hasMyLike, likes = answer.like(request.user)
+        else:
+            hasMyLike, likes = question.like(request.user)
+        return JsonResponse({
+            'error': False,
+            'likes': likes,
+            'hasMyLike': hasMyLike
+        })
+    return redirect('index')
+
+@login_required()
+def rightAnswerApiController(request):
+    if request.method == 'POST':
+        answerId = request.POST.get('answerId', None)
+        if answerId == None:
+            return JsonResponse({
+                'error': True,
+                'message': 'Answer id is required'
+            })
+        answer = Answer.objects.filter(pk=answerId).first()
+        if not answer:
+            return JsonResponse({
+                'error': True,
+                'message': 'Answer not found'
+            })
+        if answer.question.author.user != request.user:
+            return JsonResponse({
+                'error': True,
+                'message': 'You are not author of this question'
+            })
+        rightAnswer = answer.question.answers.filter(is_right=True).first()
+        if rightAnswer:
+            rightAnswer.is_right = False
+            rightAnswer.save()
+        answer.is_right = True
+        answer.save()
+        return JsonResponse({
+            'error': False
+        })
+    return redirect('index')

@@ -69,6 +69,10 @@ class Question(models.Model):
     def answers(self):
         return self.answer_set.all()
 
+    @property
+    def liked_by_profiles(self):
+        return [like.user for like in self.questionlike_set.all()]
+
     def __str__(self):
         return self.title
     
@@ -77,6 +81,12 @@ class Question(models.Model):
         if author:
             return Answer.objects.create(text=text, question=self, author=author)
         return None
+    
+    def like(self, user):
+        like, created = QuestionLike.objects.get_or_create(question=self, user=Profile.objects.filter(user=user).first())
+        if not created:
+            like.delete()
+        return (created, self.likes_count)
 
 class Answer(models.Model):
     text = models.TextField()
@@ -89,8 +99,18 @@ class Answer(models.Model):
     def likes_count(self):
         return self.answerlike_set.count()
 
+    @property
+    def liked_by_profiles(self):
+        return [like.user for like in self.answerlike_set.all()]
+
     def __str__(self):
         return self.text
+    
+    def like(self, user):
+        like, created = AnswerLike.objects.get_or_create(answer=self, user=Profile.objects.filter(user=user).first())
+        if not created:
+            like.delete()
+        return (created, self.likes_count)
     
 class QuestionLike(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)

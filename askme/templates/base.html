@@ -7,9 +7,25 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
     <title>AskVideo | {% block title %}{% endblock %}</title>
 </head>
 <body>
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="errorModalLabel">Error</h5>
+            </div>
+            <div class="modal-body">
+              <span id="errorModalMessage"></span>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
     <div class="d-flex flex-column h-100">
         {% include 'components/navbar.html' %}
         <div class="container-fluid mt-5 px-5 flex-grow-1">
@@ -25,7 +41,72 @@
         </div>
         {% include 'components/footer.html' %}
     </div>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <script>
+        function showError(message) {
+            $('#errorModalMessage').text(message)
+            $('#errorModal').modal('show')
+        }
+
+        function like(questionId, answerId=null) {
+            $.post({
+                url: '/api/like',
+                data: {
+                    'questionId': questionId,
+                    'answerId': answerId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (!response.error) {
+                        if (answerId == null) {
+                            $(`#question-${questionId} .rating`).text(response.likes)
+                            $(`#question-${questionId} .vote`).toggleClass('vote-active', response.hasMyLike)
+                        }
+                        else {
+                            $(`#answer-${answerId} .rating`).text(response.likes)
+                            $(`#answer-${answerId} .vote`).toggleClass('vote-active', response.hasMyLike)
+                        }
+                    }
+                    else
+                        showError(response.message)
+                },
+                error: function(response) {
+                    showError('Something went wrong. See details in console')
+                    console.log(response)
+                }
+            });
+        }
+
+        function markAsRightAnswer(answerId) {
+            $.post({
+                url: '/api/right_answer',
+                data: {
+                    'answerId': answerId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (!response.error) {
+                        $('.answer').each(function() {
+                            $(this).find('#right-answer-title').attr('hidden', true)
+                            $(this).find('#right-answer-button').attr('hidden', false)
+                            $(this).find('#right-answer-border').removeClass('border border-success border-2 rounded')
+                        });
+                        $(`#answer-${answerId} #right-answer-button`).attr('hidden', true)
+                        $(`#answer-${answerId} #right-answer-title`).removeAttr('hidden')
+                        $(`#answer-${answerId} #right-answer-border`).addClass('border border-success border-2 rounded')
+                    }
+                    else
+                        showError(response.message)
+                },
+                error: function(response) {
+                    showError('Something went wrong. See details in console')
+                    console.log(response)
+                }
+            });
+        }
+    </script>
+
 </body>
 </html>

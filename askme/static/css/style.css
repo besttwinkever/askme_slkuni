@@ -44,6 +44,11 @@ html, body {
     opacity: 1;
 }
 
+.vote-active {
+    color: green;
+    text-shadow: 0 0 5px green;
+}
+
 .vote:hover {
     cursor: pointer;
     opacity: 0.8;

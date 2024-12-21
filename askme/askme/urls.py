@@ -31,5 +31,9 @@ urlpatterns = [
     path('signup/', views.registerController, name='register'),
     path('logout/', views.logoutController, name='logout'),
 
+    # api methods
+    path('api/like', views.likeApiController, name='api_like'),
+    path('api/right_answer', views.rightAnswerApiController, name='api_right_answer'),
+
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
