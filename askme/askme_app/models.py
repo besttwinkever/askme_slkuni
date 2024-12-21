@@ -5,10 +5,18 @@ from django.db.models import Count
 class ProfileManager(models.Manager):
     def popular(self):
         return self.annotate(likes_count=Count('question__questionlike')).order_by('-likes_count')[:10]
+    
+    def createProfile(self, data: dict):
+        user = User.objects.filter(models.Q(username=data['login']) | models.Q(email=data['email']) | models.Q(first_name=data['displayName'])).first()
+        if user:
+            return None
+        user = User.objects.create_user(username=data['login'], email=data['email'], password=data['password'], first_name=data['displayName'])
+        profile = self.create(user=user)
+        return user
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(default='default-avartar.png')
+    avatar = models.ImageField(default='default-avatar.png')
     objects: ProfileManager = ProfileManager()
 
     def __str__(self):
@@ -34,6 +42,12 @@ class QuestionManager(models.Manager):
     
     def new(self):
         return self.order_by('-created_at')
+    
+    def createQuestion(self, user: User, data: dict):
+        question = self.create(title=data['title'], text=data['text'], author=Profile.objects.filter(user=user).first())
+        for tag in data['tags']:
+            question.tags.add(Tag.objects.get_or_create(name=tag)[0])
+        return question
         
 class Question(models.Model):
     title = models.CharField(max_length=255)
@@ -58,6 +72,12 @@ class Question(models.Model):
     def __str__(self):
         return self.title
     
+    def addAnswer(self, user: User, text: str):
+        author = Profile.objects.filter(user=user).first()
+        if author:
+            return Answer.objects.create(text=text, question=self, author=author)
+        return None
+
 class Answer(models.Model):
     text = models.TextField()
     question = models.ForeignKey(Question, on_delete=models.CASCADE)

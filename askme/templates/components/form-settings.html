@@ -1,12 +1,11 @@
-<form class="d-flex flex-column gap-3 shadow p-3 me-5 w-50">
+{% load bootstrap5 %}
+<form class="d-flex flex-column gap-3 shadow p-3 me-5 w-50" method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
     <div class="d-flex gap-2">
-        <h3>Settings:</h3>
-        <h3>Username</h3>
+        <h3>Settings</h3>
     </div>
-    {% include 'components/field-input.html' with id='login' displayName='Login:' value=profile.user.username %}
-    {% include 'components/field-input.html' with id='email' displayName='Email:' value=profile.user.email %}
-    {% include 'components/field-input.html' with id='displayName' displayName='Display name:' value=profile.user.first_name %}
-    {% include 'components/field-image.html' with id='uploadAvatar' displayName='Upload avatar' value=profile.avatar %}
-    {% include 'components/field-file-silent.html' with id='newUploadedAvatar' %}
+    {% bootstrap_form form %}
+    {% buttons %}
     <button type="submit" class="form-btn btn btn-success mt-3">Save</button>
+    {% endbuttons %}
 </form>

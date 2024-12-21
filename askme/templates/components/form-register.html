@@ -1,11 +1,9 @@
-<form class="d-flex flex-column gap-2 shadow border p-3 mx-5 w-50 align-items-center">
+{% load bootstrap5 %}
+<form class="d-flex flex-column gap-2 shadow border p-3 mx-5 w-50 align-items-center", method="POST" action="{% url 'register' %}">
+    {% csrf_token %}
     <h3>Registration</h3>
-    <span class="text-danger" id="error">Sorry, this email address already registered!</span>
-    {% include 'components/field-input-w50.html' with displayName="Login:" id="login" %}
-    {% include 'components/field-input-w50.html' with displayName="Email:" id="email" %}
-    {% include 'components/field-input-w50.html' with displayName="Display Name::" id="displayName" %}
-    {% include 'components/field-input-w50.html' with displayName="Password:" id="password" %}
-    {% include 'components/field-input-w50.html' with displayName="Repeat password:" id="repeatPassword" %}
-    {% include 'components/field-file-w50.html' with displayName="Upload avatar" id="uploadAvatar" %}
+    {% bootstrap_form form %}
+    {% buttons %}
     <button type="submit" class="form-btn btn btn-success mt-3">Register</button>
+    {% endbuttons %}
 </form>

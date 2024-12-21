@@ -1,7 +1,11 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from askme_app.models import Question, Tag, Profile
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from askme_app.forms import *
 
 def paginate(questions, request, per_page=5):
     page = 1
@@ -17,16 +21,18 @@ def paginate(questions, request, per_page=5):
         pageObj = paginator.page(1)
     return pageObj
 
-def getDataForView(request=None, is_hot=False, tag=None, baseUrl=None, isAuthenticated=True, question=None):
+def getDataForView(request, is_hot=False, tag=None, baseUrl=None, question=None, form=None, error=None):
     data = {
         'meta': {
             'is_hot': is_hot,
             'tag': tag,
-            'baseUrl': baseUrl
+            'baseUrl': baseUrl,
         },
         'tags': Tag.objects.popular(),
-        'profile': isAuthenticated and Profile.objects.first() or None,
-        'popularProfiles': Profile.objects.popular()
+        'profile': request.user.is_authenticated and Profile.objects.filter(user=request.user).first() or None,
+        'popularProfiles': Profile.objects.popular(),
+        'form': form,
+        'error': error
     }
     if baseUrl != None and request != None:
         data['page'] = paginate(Question.objects.with_tag(tag) if tag != None else Question.objects.hot() if is_hot else Question.objects.new(), request)
@@ -35,28 +41,98 @@ def getDataForView(request=None, is_hot=False, tag=None, baseUrl=None, isAuthent
     return data
 
 def indexController(request):
-    return render(request, 'index.html', getDataForView(request=request, baseUrl=reverse('index')))
+    return render(request, 'index.html', getDataForView(request, baseUrl=reverse('index')))
 
 def hotController(request):
-    return render(request, 'index.html', getDataForView(request=request, is_hot=True, baseUrl=reverse('hot')))
+    return render(request, 'index.html', getDataForView(request, is_hot=True, baseUrl=reverse('hot')))
 
 def tagController(request, tag):
-    return render(request, 'index.html', getDataForView(request=request, tag=tag, baseUrl=reverse('tag', kwargs={'tag': tag})))
+    return render(request, 'index.html', getDataForView(request, tag=tag, baseUrl=reverse('tag', kwargs={'tag': tag})))
 
+@login_required()
 def askController(request):
-    return render(request, 'ask.html', getDataForView())
+    form = AskForm(initial={
+        'title': request.GET.get('title', None),
+    })
+    if request.method == 'POST':
+        form = AskForm(request.POST)
+        if form.is_valid():
+            question = Question.objects.createQuestion(request.user, form.cleaned_data)
+            if question:
+                return redirect('question', questionId=question.pk)
+            form.add_error(None, 'Error while creating question')
+    return render(request, 'ask.html', getDataForView(request, form=form))
 
+@login_required()
 def settingsController(request):
-    return render(request, 'settings.html', getDataForView())
+    profile = Profile.objects.filter(user=request.user).first()
+    form = SettingsForm(initial={
+        'email': request.user.email,
+        'displayName': request.user.first_name,
+        'avatar': profile.avatar
+    })
+    if request.method == 'POST':
+        form = SettingsForm(request.POST, request.FILES)
+        if form.is_valid():
+            if Profile.objects.filter(user__email=form.cleaned_data['email']).exclude(user=request.user).first():
+                form.add_error('email', 'Email is already in use')
+            elif Profile.objects.filter(user__first_name=form.cleaned_data['displayName']).exclude(user=request.user).first():
+                form.add_error('displayName', 'Display name is already in use')
+            else:
+                request.user.email = form.cleaned_data['email']
+                request.user.first_name = form.cleaned_data['displayName']
+                request.user.save()
+
+                if form.cleaned_data['avatar']:
+                    profile.avatar = form.cleaned_data['avatar']
+                    profile.save()
+
+                return redirect('settings')
+    return render(request, 'settings.html', getDataForView(request, form=form))
 
 def loginController(request):
-    return render(request, 'login.html', getDataForView(isAuthenticated=False))
+    if request.user.is_authenticated:
+        return redirect('index')
+    form = LoginForm(initial={
+        'next': request.GET.get('next', 'index')
+    })
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(username=form.cleaned_data['login'], password=form.cleaned_data['password'])
+            if user:
+                login(request, user)
+                return redirect(form.cleaned_data['next'])
+            form.add_error(None, 'Invalid login or password')
+    return render(request, 'login.html', getDataForView(request, form=form))
 
 def registerController(request):
-    return render(request, 'register.html', getDataForView(isAuthenticated=False))
+    if request.user.is_authenticated:
+        return redirect('index')
+    form = RegisterForm()
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = Profile.objects.createProfile(form.cleaned_data)
+            if user:
+                login(request, user)
+                return redirect('index')
+            form.add_error(None, 'User with some of your credentials is already exists')
+    return render(request, 'register.html', getDataForView(request, form=form))
+
+@login_required()
+def logoutController(request):
+    logout(request)
+    return redirect('index')
 
 def questionController(request, questionId):
     question = Question.objects.filter(pk=questionId).first()
     if question == None:
         return redirect('index')
-    return render(request, 'question.html', getDataForView(question=question))
+    form = AnswerForm()
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = question.addAnswer(request.user, form.cleaned_data['text'])
+            return HttpResponseRedirect(f'{reverse("question", kwargs={"questionId": questionId})}#answer-{answer.id}')
+    return render(request, 'question.html', getDataForView(request, question=question, form=form))

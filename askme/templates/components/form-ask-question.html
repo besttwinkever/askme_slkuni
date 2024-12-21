@@ -1,7 +1,9 @@
-<form class="d-flex flex-column gap-3 shadow border p-3 w-50">
+{% load bootstrap5 %}
+<form class="d-flex flex-column gap-3 shadow border p-3 w-50" method="POST" accept="{% url 'ask' %}">
+    {% csrf_token %}
     <h3 class="text-center">Create new question!</h3>
-    {% include 'components/field-input.html' with displayName='Title:' id='questionTitle' %}
-    {% include 'components/field-text-area.html' with displayName='Text:' id='questionText' %}
-    {% include 'components/field-input.html' with displayName='Tags' id='questionTags' %}
+    {% bootstrap_form form %}
+    {% buttons %}
     <button type="submit" class="form-btn btn btn-success">Create</button>
+    {% endbuttons %}
 </form>

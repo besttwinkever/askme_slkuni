@@ -1,4 +1,8 @@
-<div class="d-flex flex-column gap-3">
-    <textarea class="form-control" placeholder="Your answer" rows="5"></textarea>
+{% load bootstrap5 %}
+<form class="d-flex flex-column gap-3" action="{% url 'question' question.id %}" method="POST">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
     <button class="btn btn-primary w-25">Send</button>
-</div>
+    {% endbuttons %}
+</form>

@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from askme_app import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('', views.indexController, name='index'),
@@ -27,6 +29,7 @@ urlpatterns = [
     path('settings/', views.settingsController, name='settings'),
     path('login/', views.loginController, name='login'),
     path('signup/', views.registerController, name='register'),
+    path('logout/', views.logoutController, name='logout'),
 
     path('admin/', admin.site.urls),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

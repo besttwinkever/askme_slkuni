@@ -3,7 +3,7 @@
 <!-- Question card component -->
 <div class="d-flex question-content p-2 gap-3">
     <div class="d-flex flex-column">
-        <img class="img-avatar ms-1" src="{% static 'img/' %}{{ question.author.avatar }}" alt="Avatar">
+        <img class="img-avatar ms-1" src="{{ question.author.avatar.url }}" alt="Avatar">
         <div class="d-flex gap-0 mt-2">
             <i class="bi-arrow-up vote mt-1"></i>
             <span class="rating {% if question.likes_count >= 0 %}text-success{% else %}text-danger{% endif %}">{{question.likes_count}}</span>
