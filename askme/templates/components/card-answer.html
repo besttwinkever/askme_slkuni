@@ -1,20 +1,20 @@
-{% load static %}
+<!-- {% load static %} -->
 
 <div class="d-flex flex-column gap-1 answer" id="answer-{{answer.id}}">
     <h3 id="right-answer-title" class="text-success" {% if not answer.is_right %}hidden{% endif %}>Right answer</h3>
     <div id="right-answer-border" class="d-flex gap-3 p-2 {% if answer.is_right %}border border-success border-2 rounded{% endif %}">
         <div class="d-flex flex-column">
-            <img class="img-avatar ms-1" src="{{ answer.author.avatar.url }}" alt="Avatar">
+            <img id="answer-avatar" class="img-avatar ms-1" src="{{ answer.author.avatar.url }}" alt="Avatar">
             <div class="d-flex gap-0 mt-3">
                 <i class="bi-arrow-up vote {% if profile != null and profile in answer.liked_by_profiles %}vote-active{% endif %} mt-1" onclick="like({{question.id}}, {{answer.id}})"></i>
-                <span class="rating text-success">{{answer.likes_count}}</span>
+                <span id="answer-likes" class="rating text-success">{{answer.likes_count}}</span>
                 <!-- <i class="bi-arrow-down vote mt-1"></i> -->
             </div>
         </div>
         <div class="d-flex flex-column mt-2">
-            <span>{{answer.text}}</span>
+            <span id="answer-text">{{answer.text}}</span>
             <hr>
-            <span class="text-secondary">{{answer.author.user.first_name}}, {{answer.created_at}}</span>
+            <span id="answer-name-date" class="text-secondary">{{answer.author.user.first_name}}, {{answer.created_at}}</span>
             <div class="d-flex gap-3 mt-1">
                 <a href="#">reply</a>
                 {% if question.author.user == profile.user %}
