@@ -4,3 +4,4 @@ askme/askme_app/__pycache__/*
 askme/askme_app/migrations/__pycache__/*
 askme/askme_app/management/commands/__pycache__/*
 askme/uploads/*
+web/*

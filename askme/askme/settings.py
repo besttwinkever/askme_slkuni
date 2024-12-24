@@ -124,7 +124,7 @@ MEDIA_URL = '/uploads/'
 MEDIA_ROOT = BASE_DIR / 'uploads/'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static/'
+# STATIC_ROOT = BASE_DIR / 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -136,3 +136,17 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login'
+
+CENTRIFUGO_SECRET_KEY = "fdc5440e-a76d-4227-aa47-79489040c232"
+CENTRIFUGO_WS_URL = "ws://localhost:8002/connection/websocket"
+CENTRIFUGO_API_URL = "http://localhost:8002/api"
+CENTRIFUGO_API_KEY = "9eb970ad-5fd6-48d6-9d75-9cc8686e28b8"
+
+USE_TZ = False
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/var/tmp/django_cache",
+    }
+}

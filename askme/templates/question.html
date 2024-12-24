@@ -5,6 +5,7 @@
 <div class="d-flex flex-column gap-5 w-75">
     {% include 'components/card-question.html' %}
     <div id="answers">
+        {% include 'components/card-answer.html' with answer_hidden="hidden" %}
         {% for answer in question.answers %}
             {% include 'components/card-answer.html' %}
         {% endfor %}
@@ -16,8 +17,8 @@
 <script>
 
     $(document).ready(function() {
-        const centrifuge = new Centrifuge("ws://127.0.0.1:8002/connection/websocket", {
-            token: "fdc5440e-a76d-4227-aa47-79489040c232"
+        const centrifuge = new Centrifuge("{{ centrifugo.wsUrl }}", {
+            token: "{{ centrifugo.token }}"
         });
 
         centrifuge.on('connecting', function (ctx) {
@@ -31,8 +32,7 @@
         const sub = centrifuge.newSubscription("question-{{ question.id }}");
 
         sub.on('publication', function (ctx) {
-            container.innerHTML = ctx.data.value;
-            document.title = ctx.data.value;
+            addAnswer(ctx.data.answerId, ctx.data.name, ctx.data.imageUrl, ctx.data.text, ctx.data.date, ctx.data.likes);
         }).on('subscribing', function (ctx) {
             console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
         }).on('subscribed', function (ctx) {
@@ -42,13 +42,18 @@
         }).subscribe();
     })
 
-    function addAnswer(name, imageUrl, text, date, likes) {
+    function addAnswer(answerId, name, imageUrl, text, date, likes) {
         let newAnswer = $('.answer:last').clone().appendTo('#answers');
+        newAnswer.find('#answer-hider').removeAttr('hidden');
         newAnswer.find('#answer-avatar').attr('src', imageUrl);
         newAnswer.find('#answer-text').text(text);
         newAnswer.find('#answer-name-date').text(name + ', ' + date);
         newAnswer.find('#answer-likes').text(likes);
+        newAnswer.find('#right-answer-title').attr('hidden', true);
+        newAnswer.find('#right-answer-border').removeClass('border-success');
+        newAnswer.find('#right-answer-button').attr('hidden', true);
         newAnswer.find('.vote-active').removeClass('vote-active');
+        newAnswer.find('.vote').attr('onclick', 'like({{ question.id }}, ' + answerId + ')');
     }
 </script>
 {% endblock %}

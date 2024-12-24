@@ -34,10 +34,11 @@ urlpatterns = [
     # api methods
     path('api/like', views.likeApiController, name='api_like'),
     path('api/right_answer', views.rightAnswerApiController, name='api_right_answer'),
+    path('api/search', views.searchApiController, name='api_search'),
 
     path('admin/', admin.site.urls),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

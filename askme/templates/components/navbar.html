@@ -8,11 +8,18 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <form class="d-flex" role="search" action="{% url 'ask' %}" method="GET">
-            {% csrf_token %}
-            <input class="form-control me-2" type="text" placeholder="Question" aria-label="Search" id="title" name="title">
-            <button type="submit" class="btn btn-outline-primary">Ask</button>
-        </form>
+        <div style="position: relative;">
+            <form class="d-flex" role="search" action="{% url 'ask' %}" method="GET">
+                {% csrf_token %}
+                <input class="form-control me-2" type="text" placeholder="Question" aria-label="Search" id="title" name="title">
+                <button type="submit" class="btn btn-outline-primary">Ask</button>
+            </form>
+            <div id="search-placeholders" class="list-group" style="position: absolute; top: 3em; width: 100%;" hidden>
+                <button type="button" class="list-group-item list-group-item-action">A second item</button>
+                <button type="button" class="list-group-item list-group-item-action">A third button item</button>
+                <button type="button" class="list-group-item list-group-item-action">A fourth button item</button>
+            </div>
+        </div>
         <div class="d-flex gap-3">
             {% if profile != None %}
                 <img src="{{ profile.avatar.url }}" alt="Avatar" class="img-avatar">
@@ -30,3 +37,51 @@
         </div>
     </div>
 </nav>
+
+<script>
+    let timeSinceLastKeystroke = null;
+    let delay = 2000;
+
+    function checkSearch() {
+        if (timeSinceLastKeystroke != null && Date.now() - timeSinceLastKeystroke > delay) {
+            timeSinceLastKeystroke = null;
+            let searchValue = $('#title').val();
+            if (searchValue.length == 0) {
+                $('#search-placeholders').empty();
+                $('#search-placeholders').attr('hidden', true);
+                return;
+            };
+            $.post('/api/search', {
+                'search': searchValue,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data) {
+                $('#search-placeholders').empty();
+                for (let i = 0; i < data.questions.length; i++) {
+                    {% verbatim %}
+                    let button = $(`<a href="/question/${data.questions[i].id}"><button type="button" class="list-group-item list-group-item-action">${data.questions[i].title}</button></a>`);
+                    $('#search-placeholders').append(button);
+                    {% endverbatim %}
+                }
+                $('#search-placeholders').attr('hidden', false);
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        setInterval(checkSearch, 1000);
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const title = document.getElementById('title');
+        const listGroup = document.querySelector('.list-group');
+        title.addEventListener('input', function() {
+            timeSinceLastKeystroke = Date.now();
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.list-group') && !event.target.closest('.form-control')) {
+            $('#search-placeholders').attr('hidden', true);
+        }
+    });
+</script>

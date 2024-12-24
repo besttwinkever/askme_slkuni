@@ -6,6 +6,27 @@ from askme_app.models import Question, Tag, Profile, Answer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from askme_app.forms import *
+from askme.settings import CENTRIFUGO_SECRET_KEY, CENTRIFUGO_WS_URL, CENTRIFUGO_API_KEY, CENTRIFUGO_API_URL
+import jwt
+import time
+from cent import Client, PublishRequest
+from django.core.cache import cache
+
+def getCentrifugoTokenForUser(userId):
+    token = jwt.encode({"sub": "42", "exp": int(time.time()) + 10*60}, CENTRIFUGO_SECRET_KEY, algorithm="HS256")
+    return token
+
+def publishToCentrifugo(user, answer):
+    client = Client(CENTRIFUGO_API_URL, api_key=CENTRIFUGO_API_KEY)
+    request = PublishRequest(channel="question-" + str(answer.question.pk), data={
+        'answerId': answer.pk,
+        'name': user.first_name,
+        'imageUrl': Profile.objects.filter(user=user).first().avatar.url,
+        'date': answer.created_at.strftime("%b. %d, %Y, %I:%M %p"),
+        'text': answer.text,
+        'likes': answer.likes_count
+    })
+    client.publish(request)
 
 def paginate(questions, request, per_page=5):
     page = 1
@@ -21,16 +42,28 @@ def paginate(questions, request, per_page=5):
         pageObj = paginator.page(1)
     return pageObj
 
-def getDataForView(request, is_hot=False, tag=None, baseUrl=None, question=None, form=None, error=None):
+def getDataForView(request, is_hot=False, tag=None, baseUrl=None, question=None, form=None, error=None, centrifugo=None):
+    popularProfiles = cache.get('popularProfiles')
+    if not popularProfiles:
+        print('NO CACHE')
+        popularProfiles = Profile.objects.popular()
+        cache.set('popularProfiles', popularProfiles, 5)
+    
+    popularTags = cache.get('popularTags')
+    if not popularTags:
+        print('NO CACHE (TAGS)')
+        popularTags = Tag.objects.popular()
+        cache.set('popularTags', popularTags, 5)
+    
     data = {
         'meta': {
             'is_hot': is_hot,
             'tag': tag,
             'baseUrl': baseUrl,
         },
-        'tags': Tag.objects.popular(),
+        'tags': popularTags,
         'profile': request.user.is_authenticated and Profile.objects.filter(user=request.user).first() or None,
-        'popularProfiles': Profile.objects.popular(),
+        'popularProfiles': popularProfiles,
         'form': form,
         'error': error
     }
@@ -38,6 +71,8 @@ def getDataForView(request, is_hot=False, tag=None, baseUrl=None, question=None,
         data['page'] = paginate(Question.objects.with_tag(tag) if tag != None else Question.objects.hot() if is_hot else Question.objects.new(), request)
     if question != None:
         data['question'] = question
+    if centrifugo != None:
+        data['centrifugo'] = centrifugo
     return data
 
 def indexController(request):
@@ -134,8 +169,12 @@ def questionController(request, questionId):
         form = AnswerForm(request.POST)
         if form.is_valid():
             answer = question.addAnswer(request.user, form.cleaned_data['text'])
+            publishToCentrifugo(request.user, answer)
             return HttpResponseRedirect(f'{reverse("question", kwargs={"questionId": questionId})}#answer-{answer.id}')
-    return render(request, 'question.html', getDataForView(request, question=question, form=form))
+    return render(request, 'question.html', getDataForView(request, question=question, form=form, centrifugo={
+        'token': getCentrifugoTokenForUser(request.user.is_authenticated and request.user.id or 0),
+        'wsUrl': CENTRIFUGO_WS_URL
+    }))
 
 @login_required()
 def likeApiController(request):
@@ -199,5 +238,23 @@ def rightAnswerApiController(request):
         answer.save()
         return JsonResponse({
             'error': False
+        })
+    return redirect('index')
+
+def searchApiController(request):
+    if request.method == 'POST':
+        query = request.POST.get('search', None)
+        if query == None:
+            return JsonResponse({
+                'error': True,
+                'message': 'Query is required'
+            })
+        questions = Question.objects.search(query)
+        return JsonResponse({
+            'error': False,
+            'questions': [{
+                'id': question.pk,
+                'title': question.title,
+            } for question in questions]
         })
     return redirect('index')

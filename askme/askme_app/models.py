@@ -1,10 +1,28 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Count
+from datetime import datetime, timedelta
+from django.db.models import Sum
+from django.utils import timezone
+from django.db.models import F, Q
+from django.db.models import F, Count
+from datetime import datetime, timedelta
+from django.utils import timezone
+from django.contrib.postgres.search import SearchVector
 
 class ProfileManager(models.Manager):
+
+    # Лучшие пользователи - это 10 пользователей задавших самые популярные вопросы или давших самые популярные ответы за последнюю неделю.
+    # Под популярностью подразумевается количество лайков на вопросах и ответах.
+    # Данные не должны дублироваться (если у пользователя 5 ответов и 1 лайк на вопрос, то не должно быть 5 лайков, а должен быть 1 лайк)
     def popular(self):
-        return self.annotate(likes_count=Count('question__questionlike')).order_by('-likes_count')[:10]
+        week_ago = timezone.now() - timedelta(days=7)
+        return self.filter(
+            Q(answer__created_at__gte=week_ago) | Q(question__created_at__gte=week_ago)
+        ).annotate(
+            likesCount = Count('answer__answerlike', distinct=True) + Count('question__questionlike', distinct=True)
+        ).order_by('-likesCount')[:10]
+        
     
     def createProfile(self, data: dict):
         user = User.objects.filter(models.Q(username=data['login']) | models.Q(email=data['email']) | models.Q(first_name=data['displayName'])).first()
@@ -21,10 +39,15 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
 class TagManager(models.Manager):
     def popular(self):
-        return self.annotate(questions_count=Count('question')).order_by('-questions_count')[:20]
+        three_months_ago = datetime.now() - timedelta(days=90)
+        return self.filter(
+            question__created_at__gte=three_months_ago
+        ).annotate(
+            tagsCount = Count('question__tags', distinct=True)
+        ).order_by('-tagsCount')[:10]
 
 class Tag(models.Model):
     name = models.CharField(max_length=255)
@@ -48,6 +71,11 @@ class QuestionManager(models.Manager):
         for tag in data['tags']:
             question.tags.add(Tag.objects.get_or_create(name=tag)[0])
         return question
+    
+    def search(self, query):
+        return Question.objects.annotate(
+            search = SearchVector('title') + SearchVector('text')
+        ).filter(search=query)[:5]
         
 class Question(models.Model):
     title = models.CharField(max_length=255)
